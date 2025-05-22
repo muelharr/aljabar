@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Matriks</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-calculator"></i> Kalkulator Matriks</h1>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Matrix Size Selector -->
+            <div class="matrix-size-selector">
+                <label for="matrix-size">Ukuran Matriks:</label>
+                <div class="size-selector-controls">
+                    <select id="matrix-size" onchange="createMatrixInputs()">
+                        <option value="2">2 x 2</option>
+                        <option value="3">3 x 3</option>
+                    </select>
+                    <button onclick="createMatrixInputs()" class="generate-btn">
+                        <i class="fas fa-sync-alt"></i> Generate Matriks
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Matrix Input -->
+            <div class="matrix-input-container">
+                <h2>Matriks Input</h2>
+                <div class="matrix-wrapper">
+                    <div class="matrix-bracket left-bracket">[</div>
+                    <div id="matrix-inputs"></div>
+                    <div class="matrix-bracket right-bracket">]</div>
+                </div>
+            </div>
+            
+            <!-- Matrix Operations -->
+            <div class="matrix-operations">
+                <button onclick="calculateDeterminant()">Hitung Determinan</button>
+                <button onclick="calculateInverse()">Hitung Invers</button>
+                <button onclick="multiplyWithInverse()">Validasi Matrix (kalikan dengan invers)</button>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="results" id="results-section">
+                <div class="determinant-result" id="determinant-result">
+                    <h2>Determinan</h2>
+                    <div id="determinant-value" class="result-value"></div>
+                </div>
+                
+                <div class="inverse-result" id="inverse-result">
+                    <h2>Matriks Invers</h2>
+                    <div class="matrix-wrapper">
+                        <div class="matrix-bracket left-bracket">[</div>
+                        <div id="inverse-matrix"></div>
+                        <div class="matrix-bracket right-bracket">]</div>
+                    </div>
+                </div>
+                
+                <div class="multiplication-result" id="multiplication-result">
+                    <h2>Hasil Perkalian dengan Invers</h2>
+                    <div class="matrix-wrapper">
+                        <div class="matrix-bracket left-bracket">[</div>
+                        <div id="multiplication-result-matrix"></div>
+                        <div class="matrix-bracket right-bracket">]</div>
+                    </div>
+                </div>
+                
+                <div id="error-message" class="error-message hidden"></div>
+            </div>
+        </div>
+        
+        <!-- How to Use Section -->
+        <div class="how-to-use">
+            <h2><i class="fas fa-info-circle"></i> Cara Penggunaan</h2>
+            <ul>
+                <li>Pilih ukuran matriks (2×2, 3×3, atau 4×4)</li>
+                <li>Klik "Generate Matriks" untuk membuat kolom input</li>
+                <li>Masukkan nilai-nilai matriks</li>
+                <li>Klik tombol operasi yang diinginkan</li>
+                <li>Untuk menghitung invers, matriks harus memiliki determinan tidak sama dengan nol</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
