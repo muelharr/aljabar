@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Invers Matriks 2x2 & 3x3</title>
+  <style>
+    body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #F1EFEC;
+  color: #030303;
+  margin: 0;
+  padding: 0;
+  /* Hilangkan flex di body */
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+  height: 100vh;
+  overflow: hidden; /* agar tidak scroll page */
+  position: relative;
+}
+
+.container {
+  position: fixed; /* posisi tetap */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  display: flex;
+  gap: 30px;
+  background-color: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  max-width: 1100px;
+  width: 100%;
+  max-height: 90vh; /* batasi tinggi maksimal container */
+  overflow-y: auto; /* scroll vertikal kalau isinya lebih besar */
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.left, .right {
+  flex: 1 1 45%;
+  min-width: 300px;
+  max-height: 80vh; /* agar section tidak terlalu tinggi */
+  overflow-y: auto; /* scroll internal jika isi panjang */
+}
+
+    h1 {
+      color: #123458;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    select, button {
+      font-size: 16px;
+      padding: 8px 12px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      border: 1px solid #123458;
+      background-color: #D4C9BE;
+      color: #030303;
+    }
+
+    .matrix-input {
+      display: grid;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .matrix-2x2 {
+      grid-template-columns: repeat(2, 60px);
+    }
+
+    .matrix-3x3 {
+      grid-template-columns: repeat(3, 60px);
+    }
+
+    input {
+      width: 60px;
+      text-align: center;
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #123458;
+      border-radius: 4px;
+      background-color: #D4C9BE;
+      color: #030303;
+    }
+
+    button {
+      background-color: #123458;
+      color: white;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0e2e4d;
+    }
+
+    .result {
+      background: #F1EFEC;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 10px 0;
+    }
+
+    td {
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+
+    .rumus {
+      margin-top: 15px;
+      font-style: italic;
+      color: #123458;
+      background-color: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px dashed #123458;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="left">
+    <h1>Determinan & Invers Matriks</h1>
+
+    <label for="matrixSize"><strong>Pilih Ukuran Matriks:</strong></label><br>
+    <select id="matrixSize" onchange="renderInputs()">
+      <option value="2">2x2</option>
+      <option value="3">3x3</option>
+    </select>
+
+    <div id="inputContainer" class="matrix-input matrix-2x2"></div>
+
+    <button onclick="hitung()">Hitung</button>
+  </div>
+
+  <div class="right">
+    <div class="result" id="output"></div>
+  </div>
+</div>
+
+<script>
+function renderInputs() {
+  const size = parseInt(document.getElementById("matrixSize").value);
+  const container = document.getElementById("inputContainer");
+  container.innerHTML = '';
+  container.className = `matrix-input matrix-${size}x${size}`;
+
+  for (let i = 0; i < size * size; i++) {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.value = Math.floor(Math.random() * 10 + 1);
+    container.appendChild(input);
+  }
+}
+
+function getMatrix(size) {
+  const inputs = document.querySelectorAll('#inputContainer input');
+  const matrix = [];
+  for (let i = 0; i < size; i++) {
+    matrix[i] = [];
+    for (let j = 0; j < size; j++) {
+      matrix[i][j] = parseFloat(inputs[i * size + j].value);
+    }
+  }
+  return matrix;
+}
+
+function det2x2(m) {
+  return m[0][0] * m[1][1] - m[0][1] * m[1][0];
+}
+
+function inv2x2(m) {
+  const det = det2x2(m);
+  if (det === 0) return null;
+  return [
+    [ m[1][1] / det, -m[0][1] / det ],
+    [-m[1][0] / det,  m[0][0] / det ]
+  ];
+}
+
+function minor3x3(matrix, row, col) {
+  const minor = [];
+  for (let i = 0; i < 3; i++) {
+    if (i !== row) {
+      const newRow = [];
+      for (let j = 0; j < 3; j++) {
+        if (j !== col) newRow.push(matrix[i][j]);
+      }
+      minor.push(newRow);
+    }
+  }
+  return det2x2(minor);
+}
+
+function det3x3(matrix) {
+  let det = 0;
+  for (let j = 0; j < 3; j++) {
+    det += matrix[0][j] * minor3x3(matrix, 0, j) * (j % 2 === 0 ? 1 : -1);
+  }
+  return det;
+}
+
+function cofactor3x3(matrix) {
+  const cof = [];
+  for (let i = 0; i < 3; i++) {
+    cof[i] = [];
+    for (let j = 0; j < 3; j++) {
+      cof[i][j] = minor3x3(matrix, i, j) * ((i + j) % 2 === 0 ? 1 : -1);
+    }
+  }
+  return cof;
+}
+
+function transpose(m) {
+  return m[0].map((_, colIndex) => m.map(row => row[colIndex]));
+}
+
+function inv3x3(matrix) {
+  const det = det3x3(matrix);
+  if (det === 0) return null;
+  const cof = cofactor3x3(matrix);
+  const adj = transpose(cof);
+  return adj.map(row => row.map(val => val / det));
+}
+
+function multiply(A, B) {
+  const size = A.length;
+  const result = [];
+  for (let i = 0; i < size; i++) {
+    result[i] = [];
+    for (let j = 0; j < size; j++) {
+      result[i][j] = 0;
+      for (let k = 0; k < size; k++) {
+        result[i][j] += A[i][k] * B[k][j];
+      }
+    }
+  }
+  return result;
+}
+
+function matrixToHTML(m) {
+  return `
+    <table>
+      ${m.map(row => `<tr>${row.map(x => `<td>${x.toFixed(2)}</td>`).join("")}</tr>`).join("")}
+    </table>
+  `;
+}
+
+function hitung() {
+  const size = parseInt(document.getElementById("matrixSize").value);
+  const A = getMatrix(size);
+  let output = `<strong>Matriks A:</strong>${matrixToHTML(A)}`;
+  let det = 0;
+  let A_inv = null;
+  let rumus = "";
+
+  if (size === 2) {
+    det = det2x2(A);
+    rumus = `
+      <h3>Penjelasan Cara Menghitung Determinan 2x2:</h3>
+      <p>Untuk matriks 2x2:</p>
+      <p>Jika matriks A = <br>
+      | a &nbsp;&nbsp; b |<br>
+      | c &nbsp;&nbsp; d |</p>
+      <p>Maka determinan dihitung dengan rumus:</p>
+      <p><strong>det(A) = (a × d) - (b × c)</strong></p>
+      <p>Contoh:</p>
+      <p>Misal A = <br>
+      | ${A[0][0]} &nbsp;&nbsp; ${A[0][1]} |<br>
+      | ${A[1][0]} &nbsp;&nbsp; ${A[1][1]} |</p>
+      <p>Maka: det(A) = (${A[0][0]} × ${A[1][1]}) - (${A[0][1]} × ${A[1][0]}) = <strong>${(A[0][0] * A[1][1]).toFixed(2)}</strong> - <strong>${(A[0][1] * A[1][0]).toFixed(2)}</strong> = <strong>${det.toFixed(2)}</strong></p>
+    `;
+    A_inv = inv2x2(A);
+  } else {
+    det = det3x3(A);
+    // Buat string proses hitung determinan 3x3
+    const a = A[0][0], b = A[0][1], c = A[0][2];
+    const d = A[1][0], e = A[1][1], f = A[1][2];
+    const g = A[2][0], h = A[2][1], i = A[2][2];
+    // Minor 2x2
+    const m00 = (e * i - f * h).toFixed(2);
+    const m01 = (d * i - f * g).toFixed(2);
+    const m02 = (d * h - e * g).toFixed(2);
+    rumus = `
+      <h3>Penjelasan Cara Menghitung Determinan 3x3:</h3>
+      <p>Untuk matriks 3x3:</p>
+      <p>Jika matriks A = <br>
+      | a &nbsp;&nbsp; b &nbsp;&nbsp; c |<br>
+      | d &nbsp;&nbsp; e &nbsp;&nbsp; f |<br>
+      | g &nbsp;&nbsp; h &nbsp;&nbsp; i |</p>
+      <p>Maka determinan dihitung dengan rumus:</p>
+      <p><strong>det(A) = a(ei − fh) − b(di − fg) + c(dh − eg)</strong></p>
+      <p>Substitusi nilai:</p>
+      <p>a = ${a}, b = ${b}, c = ${c}</p>
+      <p>d = ${d}, e = ${e}, f = ${f}</p>
+      <p>g = ${g}, h = ${h}, i = ${i}</p>
+      <p>Hitung minor:</p>
+      <ul>
+        <li>ei − fh = (${e}×${i}) − (${f}×${h}) = ${m00}</li>
+        <li>di − fg = (${d}×${i}) − (${f}×${g}) = ${m01}</li>
+        <li>dh − eg = (${d}×${h}) − (${e}×${g}) = ${m02}</li>
+      </ul>
+      <p>Maka:</p>
+      <p>det(A) = ${a} × ${m00} − ${b} × ${m01} + ${c} × ${m02}</p>
+      <p>det(A) = ${(a * m00).toFixed(2)} − ${(b * m01).toFixed(2)} + ${(c * m02).toFixed(2)} = <strong>${det.toFixed(2)}</strong></p>
+    `;
+    A_inv = inv3x3(A);
+  }
+
+  output += `<br><strong>Determinan:</strong> ${det.toFixed(2)}`;
+
+  if (!A_inv) {
+    output += `<br><span style="color:red;">Matriks tidak memiliki invers (determinan = 0).</span>`;
+  } else {
+    output += `<br><br><strong>Invers Matriks:</strong>${matrixToHTML(A_inv)}`;
+    const hasil = multiply(A, A_inv);
+    output += `<br><strong>Perkalian A × A⁻¹:</strong>${matrixToHTML(hasil)}`;
+  }
+
+  output += `<div class="rumus"><strong>Penjelasan Langkah dan Rumus:</strong><br>${rumus}</div>`;
+  document.getElementById("output").innerHTML = output;
+}
+
+renderInputs();
+</script>
+</body>
+</html>
